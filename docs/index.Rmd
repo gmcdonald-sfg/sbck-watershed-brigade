@@ -1,17 +1,103 @@
 ---
 title: "SBCK Watershed Brigade Dashboard"
 output:
-  flexdashboard::flex_dashboard
+  flexdashboard::flex_dashboard:
+    orientation: rows
 ---
 
-### Example chart
+```{r}
+# Load necessary packages
+library(tidyverse) # For data wrangling
+library(leaflet) # For mapping
+library(googlesheets4) # For loading data from Google Sheets
+library(flexdashboard) # Tools for making the dashboard
 
-The current time is `r Sys.time()`
+# Read in raw data from Google Sheets
+watershed_brigade_data_raw <- googlesheets4::read_sheet("1SVNe7XiDKMprvO3PnNbQBSRoYau1JbyqwHhx6Dz67jc",
+                                                        col_types = "c",
+                                                        skip = 1) 
+```
 
 ```{r}
-library(tidyverse)
-library(leaflet)
+# Process data
+watershed_brigade_data_processed <- watershed_brigade_data_raw %>% 
+  # Don't want these rows
+  filter(!(Name %in% c("Totals","Points","Name"))) %>%
+  filter(!str_detect(Name,"Total")) %>%
+  # Require there to be a name
+  filter(!is.na(Name)) %>%
+  # This gets rid of header rows that have things like "January 2021"
+  mutate(Date = lubridate::mdy(Date)) %>%
+  # Don't want rows that don't have a date
+  filter(!is.na(Date)) %>%
+  # Convert weight to numeric pounds
+  mutate(weight_pounds = as.numeric(`weight (lbs)`),
+         group_total = as.numeric(`Group total`)) %>%
+  # Add column for cleanup event ids
+  mutate(cleanup_event_id = paste0(Date,"_",Location)) %>%
+  # Add extra volunteers, in cases when group_total is >1
+  # This will be used to count number of unique volunteers
+  mutate(add_multiple_volunteers = ifelse(group_total>1,
+                                          group_total-1,
+                                          0))
+
+##### Let's calculate some statistics for the dashboard
+
+# How many unique volunteers were there?
+# Count up distinct number of names
+# Then add extra volunteers, in cases when the group size was >1
+number_unique_volunters <-
+  n_distinct(watershed_brigade_data_processed$Name) +
+  sum(watershed_brigade_data_processed$add_multiple_volunteers,
+      na.rm=TRUE)
+
+# How many pounds of trash were cleaned up?
+number_pounds_trash <- sum(watershed_brigade_data_processed$weight_pounds,
+                           na.rm=TRUE) %>%
+  # Round this
+  round()
+
+# How many unique cleanup events were there?
+number_volunteer_events <- n_distinct(watershed_brigade_data_processed$cleanup_event_id)
 ```
+
+Dashboard
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### Volunteers {.value-box}
+
+```{r}
+# Icon names are from here: https://fontawesome.com/icons/users?s=solid&f=classic
+valueBox(value = prettyNum(number_unique_volunters, 
+                           big.mark = ","),
+         icon = "fa-users")
+```
+
+### Pounds of Trash {.value-box}
+
+```{r}
+# Icon names are from here: https://fontawesome.com/icons/users?s=solid&f=classic
+valueBox(value = prettyNum(number_pounds_trash, 
+                           big.mark = ","),
+         icon = "fa-trash")
+```
+
+### Events {.value-box}
+
+```{r}
+# Icon names are from here: https://fontawesome.com/icons/users?s=solid&f=classic
+valueBox(value = prettyNum(number_volunteer_events, 
+                           big.mark = ","),
+         icon = "fa-calendar-check")
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Watershed Brigade Cumulative Cleanup Map
 
 ```{r}
 leaflet() %>%
