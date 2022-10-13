@@ -19,6 +19,6 @@ jobs:
         run: Rscript -e 'rmarkdown::render("docs/index.Rmd", output_format = "all")'
       - name: Commit results
         run: |
-          git add docs/my-document*
-          git commit -m 'Re-build my-document' || echo "No changes to commit"
+          git add docs/index*
+          git commit -m 'Re-build index' || echo "No changes to commit"
           git push origin || echo "No changes to commit"
