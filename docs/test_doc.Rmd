@@ -1,0 +1,13 @@
+---
+title: "My document"
+output: 
+  github_document: default
+  html_document: default
+---
+
+Introduction
+---
+
+Some highly informative text, now with a clause.
+
+The current time is `r Sys.time()`.
