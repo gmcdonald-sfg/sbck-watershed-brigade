@@ -19,6 +19,8 @@ jobs:
         run: Rscript -e 'install.packages("tidyverse")'
       - name: Install flexdashboard
         run: Rscript -e 'install.packages("flexdashboard")'
+      - name: Install leaflet
+        run: Rscript -e 'install.packages("leaflet")'
       - name: Render my document to all types
         run: Rscript -e 'rmarkdown::render("docs/index.Rmd", output_format = "all")'
       - name: Commit results
