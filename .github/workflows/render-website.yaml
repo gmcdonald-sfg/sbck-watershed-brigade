@@ -1,7 +1,7 @@
 on:
   push:
     paths:
-      - docs/test_doc.Rmd
+      - docs/index.Rmd
 
 name: Render my document
 
