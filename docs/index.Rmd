@@ -1,14 +1,19 @@
 ---
-title: "My document"
-output: 
-  html_document: default
+title: "SBCK Watershed Brigade Dashboard"
+output:
+  flexdashboard::flex_dashboard
 ---
 
-Introduction
----
+### Example chart
 
-Some highly informative text, now with a clause.
+The current time is `r Sys.time()`
 
-The current time is `r Sys.time()`.
+```{r}
+library(tidyverse)
+mtcars %>%
+  ggplot(aes(x = cyl,
+             y = mpg)) +
+  geom_point()
+  
+```
 
-Trying again
