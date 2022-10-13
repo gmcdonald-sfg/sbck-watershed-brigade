@@ -1,7 +1,6 @@
 ---
 title: "My document"
 output: 
-  github_document: default
   html_document: default
 ---
 
