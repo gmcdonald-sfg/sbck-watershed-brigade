@@ -58,10 +58,12 @@ library(flexdashboard) # Tools for making the dashboard
 # #In sheets_auth() we can specify where the token is cached and which
 # #email we used to authenticate.
 # # sheets reauth with specified token and email address
-gs4_auth(
-  cache = '.secrets',
-  email = 'gavinmcd@gmail.com'
-)
+# gs4_auth(
+#   cache = '.secrets',
+#   email = 'gavinmcd@gmail.com'
+# )
+#gs4_deauth()
+gs4_auth(path = "sbck-365516-dc922ef58c73.json")
 
 # options(
 #  gargle_oauth_cache = '.secrets',
