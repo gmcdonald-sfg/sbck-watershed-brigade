@@ -58,17 +58,17 @@ library(flexdashboard) # Tools for making the dashboard
 # #In sheets_auth() we can specify where the token is cached and which
 # #email we used to authenticate.
 # # sheets reauth with specified token and email address
-# gs4_auth(
-#   cache = '.secrets',
-#   email = 'gavinmcd@gmail.com'
-# )
-
-options(
- gargle_oauth_cache = '.secrets',
- gargle_oauth_email = 'gavinmcd@gmail.com'
+gs4_auth(
+  cache = '.secrets',
+  email = 'gavinmcd@gmail.com'
 )
 
-gs4_auth()
+# options(
+#  gargle_oauth_cache = '.secrets',
+#  gargle_oauth_email = 'gavinmcd@gmail.com'
+# )
+# 
+# gs4_auth()
 
 # Read in raw data from Google Sheets
 watershed_brigade_data_raw <- googlesheets4::read_sheet("1SVNe7XiDKMprvO3PnNbQBSRoYau1JbyqwHhx6Dz67jc",
