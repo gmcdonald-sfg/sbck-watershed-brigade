@@ -152,7 +152,7 @@ monthly_volunteer_summary <- watershed_brigade_data_processed %>%
            month_number) %>%
   summarize(Points = sum(points,na.rm=TRUE)) %>%
   ungroup() %>%
-  # Just look at latest year and month
+  # Just look at latest year and month 
   filter(Year == current_year,
          month_number == current_month) %>%
   arrange(-Points) %>%
