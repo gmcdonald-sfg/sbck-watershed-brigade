@@ -3,7 +3,20 @@ title: "SBCK Watershed Brigade Dashboard"
 output:
   flexdashboard::flex_dashboard:
     orientation: rows
+    vertical_layout: fill
 ---
+
+<style>
+
+body {
+  padding-top:0px
+}
+
+.navbar{
+  visibility: hidden
+}
+
+</style>
 
 ```{r}
 # Load necessary packages
@@ -83,9 +96,6 @@ number_pounds_trash <- sum(watershed_brigade_data_processed$weight_pounds,
 # How many unique cleanup events were there?
 number_volunteer_events <- n_distinct(watershed_brigade_data_processed$cleanup_event_id)
 ```
-
-Dashboard
-=======================================================================
 
 Row
 -----------------------------------------------------------------------
