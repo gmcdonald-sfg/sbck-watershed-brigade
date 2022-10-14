@@ -22,10 +22,10 @@ library(flexdashboard) # Tools for making the dashboard
 # Check that a file has been created with:
 #list.files(".secrets/")
 # Check that the non-interactive authentication works by first deauthorizing: 
-gs4_deauth()
+#gs4_deauth()
 
 # Authenticate using token. If no browser opens, the authentication works.
-gs4_auth(cache = ".secrets", email = "gavinmcd@gmail.com")
+gs4_auth(cache = ".secrets", email = "gavinmcd@gmail.com", use_oob = TRUE)
 
 # Read in raw data from Google Sheets
 watershed_brigade_data_raw <- googlesheets4::read_sheet("1SVNe7XiDKMprvO3PnNbQBSRoYau1JbyqwHhx6Dz67jc",
@@ -43,6 +43,8 @@ watershed_brigade_data_processed <- watershed_brigade_data_raw %>%
   filter(!is.na(Name)) %>%
   # This gets rid of header rows that have things like "January 2021"
   mutate(Date = lubridate::mdy(Date)) %>%
+  # Add month name column
+  mutate(Month = lubridate::month(Date,label=TRUE,abbr = FALSE)) %>%
   # Don't want rows that don't have a date
   filter(!is.na(Date)) %>%
   # Convert weight to numeric pounds
@@ -54,7 +56,13 @@ watershed_brigade_data_processed <- watershed_brigade_data_raw %>%
   # This will be used to count number of unique volunteers
   mutate(add_multiple_volunteers = ifelse(group_total>1,
                                           group_total-1,
-                                          0))
+                                          0))  %>%
+  # Extract coordinates following this example: https://stackoverflow.com/questions/39009626/r-sets-of-coordinates-extract-from-string/39010020#39010020
+    mutate(coordinates_2 = gsub('\\([^)]+\\)', '', Coordinates),
+           coordinates_2 = gsub('(\\d+[.]\\d+)[.]\\d+', '\\1', Coordinates)) %>%
+    separate(coordinates_2, c( 'lat','lon'), fill = 'right', sep = '[,/]', convert = TRUE) %>%
+  mutate(lat = as.numeric(lat),
+         lon =as.numeric(lon))
 
 ##### Let's calculate some statistics for the dashboard
 
@@ -115,10 +123,21 @@ Row
 ### Watershed Brigade Cumulative Cleanup Map
 
 ```{r}
-leaflet() %>%
+leaflet(data = watershed_brigade_data_processed) %>%
   addTiles() %>%
-  setView(lng = -119.6982,
-          lat = 34.4208,
-          zoom = 9)
+  # setView(lng = -119.6982,
+  #         lat = 34.4208,
+  #         zoom = 9) %>%
+  addMarkers(lng = ~lon,
+        lat = ~lat,
+        clusterOptions = markerClusterOptions(),
+        popup = ~paste0("<strong>Month: </strong>",as.character(Month),"<br>",
+                        "<strong>Name: </strong>",as.character(Name),"<br>",
+                        "<strong>Date: </strong>",as.character(Date),"<br>",
+                        "<strong>Group size: </strong>",as.character(group_total),"<br>",
+                        "<strong>Place: </strong>",as.character(Location),"<br>",
+                        "<strong>Weight (lbs): </strong>",as.character(weight_pounds),"<br>",
+                        "<strong>Bag(s): </strong>",as.character(`Amount of trash (bags)`),"<br>",
+                        "<strong>Time (hours): </strong>",as.character(Hours)))
 ```
 
