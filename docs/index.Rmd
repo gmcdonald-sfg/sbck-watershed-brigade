@@ -3,20 +3,8 @@ title: "SBCK Watershed Brigade Dashboard"
 output:
   flexdashboard::flex_dashboard:
     orientation: rows
-    vertical_layout: fill
 ---
 
-<style>
-
-body {
-padding-top:0px
-}
-
-.navbar{
-visibility: hidden
-}
-
-</style>
 
 ```{r}
 # Load necessary packages
@@ -24,6 +12,7 @@ library(tidyverse) # For data wrangling
 library(leaflet) # For mapping 
 library(googlesheets4) # For loading data from Google Sheets
 library(flexdashboard) # Tools for making the dashboard
+library(DT)
 ```
 
 ```{r}
@@ -31,8 +20,8 @@ library(flexdashboard) # Tools for making the dashboard
 # Sheet is publically available to view, so force deauth
 gs4_deauth()
 watershed_brigade_data_raw <- read_sheet("1SVNe7XiDKMprvO3PnNbQBSRoYau1JbyqwHhx6Dz67jc",
-                                                        col_types = "c",
-                                                        skip = 1) 
+                                         col_types = "c",
+                                         skip = 1) 
 # Process data
 watershed_brigade_data_processed <- watershed_brigade_data_raw %>% 
   # Don't want these rows
@@ -43,7 +32,11 @@ watershed_brigade_data_processed <- watershed_brigade_data_raw %>%
   # This gets rid of header rows that have things like "January 2021"
   mutate(Date = lubridate::mdy(Date)) %>%
   # Add month name column
-  mutate(Month = lubridate::month(Date,label=TRUE,abbr = FALSE)) %>%
+  mutate(Month = lubridate::month(Date,label=TRUE,abbr = FALSE),
+         # Add year number column
+         Year = lubridate::year(Date),
+         # Add month number, for sorting
+         month_number = lubridate::month(Date)) %>%
   # Don't want rows that don't have a date
   filter(!is.na(Date)) %>%
   # Convert weight to numeric pounds
@@ -61,7 +54,9 @@ watershed_brigade_data_processed <- watershed_brigade_data_raw %>%
          coordinates_2 = gsub('(\\d+[.]\\d+)[.]\\d+', '\\1', Coordinates)) %>%
   separate(coordinates_2, c( 'lat','lon'), fill = 'right', sep = '[,/]', convert = TRUE) %>%
   mutate(lat = as.numeric(lat),
-         lon =as.numeric(lon))
+         lon =as.numeric(lon)) %>%
+  # Make points numeric, so we can count them
+  mutate(points = as.numeric(points))
 
 ##### Let's calculate some statistics for the dashboard
 
@@ -116,7 +111,7 @@ valueBox(value = prettyNum(number_volunteer_events,
 Row
 -----------------------------------------------------------------------
 
-### Watershed Brigade Cumulative Cleanup Map
+### Cumulative Cleanup Map
 
 ```{r}
 leaflet(data = watershed_brigade_data_processed) %>%
@@ -135,5 +130,57 @@ leaflet(data = watershed_brigade_data_processed) %>%
                              "<strong>Weight (lbs): </strong>",as.character(weight_pounds),"<br>",
                              "<strong>Bag(s): </strong>",as.character(`Amount of trash (bags)`),"<br>",
                              "<strong>Time (hours): </strong>",as.character(Hours)))
+```
+
+### The Monthly Scoreboard: Participants and Points earned in the current Monthly Challenge
+
+```{r}
+# What is current year for challenge?
+current_year <- max(watershed_brigade_data_processed$Year,na.rm=TRUE)
+
+# What is current month?
+current_month <- watershed_brigade_data_processed %>%
+  filter(Year == current_year) %>%
+  .$month_number %>%
+  max(na.rm=TRUE)
+
+# Summarize total points by name and month for monthly volunteer summary
+monthly_volunteer_summary <- watershed_brigade_data_processed %>% 
+  group_by(Name,
+           Year,
+           Month,
+           month_number) %>%
+  summarize(Points = sum(points,na.rm=TRUE)) %>%
+  ungroup() %>%
+  # Just look at latest year and month
+  filter(Year == current_year,
+         month_number == current_month) %>%
+  arrange(-Points) %>%
+  dplyr::select(-month_number)
+
+monthly_volunteer_summary %>%
+  datatable(options = list(dom = 'tp'))
+```
+
+Row
+-----------------------------------------------------------------------
+
+### Watershed Brigade Monthly Cummulative Clean-up Chart
+
+```{r}
+# Using same approach as above, summarize monthly sites, volunteers, and pounds of trash
+monthly_total_summary <- watershed_brigade_data_processed %>%
+  group_by(Year,
+           Month,
+           month_number) %>%
+  summarize(`Number of sites cleaned` = n_distinct(Location),
+            `Number of volunteers` = n_distinct(Name) + sum(add_multiple_volunteers,na.rm=TRUE),
+            `Total pounds of trash` = round(sum(weight_pounds, na.rm = TRUE))) %>%
+  ungroup() %>%
+  arrange(-Year,-month_number) %>%
+  dplyr::select(-month_number)
+
+monthly_total_summary %>%
+  datatable(options = list(dom = 'tp'))
 ```
 
