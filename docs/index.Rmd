@@ -9,11 +9,11 @@ output:
 <style>
 
 body {
-  padding-top:0px
+padding-top:0px
 }
 
 .navbar{
-  visibility: hidden
+visibility: hidden
 }
 
 </style>
@@ -38,7 +38,37 @@ library(flexdashboard) # Tools for making the dashboard
 #gs4_deauth()
 
 # Authenticate using token. If no browser opens, the authentication works.
-gs4_auth(token = gs4_token())
+# gs4_auth(cache = ".secrets", email = "gavinmcd@gmail.com", use_oob = TRUE)
+#gs4_auth(token = gs4_token())
+
+# designate project-specific cache
+# options(gargle_oauth_cache = '.secrets')
+# # check the value of the option, if you like
+# gargle::gargle_oauth_cache()
+# 
+# # trigger auth on purpose to store a token in the specified cache
+# # a broswer will be opened
+# googlesheets4::gs4_auth()
+# 
+# # see your token file in the cache, if you like
+# list.files('.secrets/')
+# 
+# # deauth
+# gs4_deauth()
+# #In sheets_auth() we can specify where the token is cached and which
+# #email we used to authenticate.
+# # sheets reauth with specified token and email address
+# gs4_auth(
+#   cache = '.secrets',
+#   email = 'gavinmcd@gmail.com'
+# )
+
+options(
+ gargle_oauth_cache = '.secrets',
+ gargle_oauth_email = 'gavinmcd@gmail.com'
+)
+
+gs4_auth()
 
 # Read in raw data from Google Sheets
 watershed_brigade_data_raw <- googlesheets4::read_sheet("1SVNe7XiDKMprvO3PnNbQBSRoYau1JbyqwHhx6Dz67jc",
@@ -71,9 +101,9 @@ watershed_brigade_data_processed <- watershed_brigade_data_raw %>%
                                           group_total-1,
                                           0))  %>%
   # Extract coordinates following this example: https://stackoverflow.com/questions/39009626/r-sets-of-coordinates-extract-from-string/39010020#39010020
-    mutate(coordinates_2 = gsub('\\([^)]+\\)', '', Coordinates),
-           coordinates_2 = gsub('(\\d+[.]\\d+)[.]\\d+', '\\1', Coordinates)) %>%
-    separate(coordinates_2, c( 'lat','lon'), fill = 'right', sep = '[,/]', convert = TRUE) %>%
+  mutate(coordinates_2 = gsub('\\([^)]+\\)', '', Coordinates),
+         coordinates_2 = gsub('(\\d+[.]\\d+)[.]\\d+', '\\1', Coordinates)) %>%
+  separate(coordinates_2, c( 'lat','lon'), fill = 'right', sep = '[,/]', convert = TRUE) %>%
   mutate(lat = as.numeric(lat),
          lon =as.numeric(lon))
 
@@ -139,15 +169,15 @@ leaflet(data = watershed_brigade_data_processed) %>%
   #         lat = 34.4208,
   #         zoom = 9) %>%
   addMarkers(lng = ~lon,
-        lat = ~lat,
-        clusterOptions = markerClusterOptions(),
-        popup = ~paste0("<strong>Month: </strong>",as.character(Month),"<br>",
-                        "<strong>Name: </strong>",as.character(Name),"<br>",
-                        "<strong>Date: </strong>",as.character(Date),"<br>",
-                        "<strong>Group size: </strong>",as.character(group_total),"<br>",
-                        "<strong>Place: </strong>",as.character(Location),"<br>",
-                        "<strong>Weight (lbs): </strong>",as.character(weight_pounds),"<br>",
-                        "<strong>Bag(s): </strong>",as.character(`Amount of trash (bags)`),"<br>",
-                        "<strong>Time (hours): </strong>",as.character(Hours)))
+             lat = ~lat,
+             clusterOptions = markerClusterOptions(),
+             popup = ~paste0("<strong>Month: </strong>",as.character(Month),"<br>",
+                             "<strong>Name: </strong>",as.character(Name),"<br>",
+                             "<strong>Date: </strong>",as.character(Date),"<br>",
+                             "<strong>Group size: </strong>",as.character(group_total),"<br>",
+                             "<strong>Place: </strong>",as.character(Location),"<br>",
+                             "<strong>Weight (lbs): </strong>",as.character(weight_pounds),"<br>",
+                             "<strong>Bag(s): </strong>",as.character(`Amount of trash (bags)`),"<br>",
+                             "<strong>Time (hours): </strong>",as.character(Hours)))
 ```
 
