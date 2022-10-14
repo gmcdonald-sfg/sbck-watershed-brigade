@@ -188,4 +188,4 @@ monthly_total_summary %>%
 Row {data-height=50}
 -----------------------------------------------------------------------
 
-### Last updated: `r lubridate::force_tz(Sys.time(),tzone = "America/Los_Angeles")` Santa Barbara time.
+### Last updated: `r lubridate::with_tz(Sys.time(),tzone = "America/Los_Angeles")` Santa Barbara time.
