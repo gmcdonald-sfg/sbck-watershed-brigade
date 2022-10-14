@@ -63,7 +63,8 @@ library(flexdashboard) # Tools for making the dashboard
 #   email = 'gavinmcd@gmail.com'
 # )
 #gs4_deauth()
-gs4_auth(path = "sbck-365516-dc922ef58c73.json")
+gs4_auth(path = "sbck-365516-dc922ef58c73.json",
+         email = 'gavinmcd@gmail.com')
 
 # options(
 #  gargle_oauth_cache = '.secrets',
