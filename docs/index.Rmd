@@ -16,7 +16,7 @@ library(DT)
 ```
 
 ```{r}
-# Read in raw data from Google Sheets
+# Read in raw data from Google Sheets 
 # Sheet is publically available to view, so force deauth
 gs4_deauth()
 watershed_brigade_data_raw <- read_sheet("1SVNe7XiDKMprvO3PnNbQBSRoYau1JbyqwHhx6Dz67jc",
