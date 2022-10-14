@@ -3,8 +3,8 @@ on:
     paths:
       - docs/index.Rmd
   schedule:
-    # Runs "At 11:05 on every day-of-week from Monday through Friday"
-    - cron: '13 18 * * 1-5'
+    # Runs "At 11:05 on every day-of-week from Monday through Friday", time in UTC
+    - cron: '17 18 * * 1-5'
 
 name: Render my document
 
