@@ -27,7 +27,7 @@ library(flexdashboard) # Tools for making the dashboard
 
 # Authentication guidance: https://stackoverflow.com/questions/63535190/connect-to-googlesheets-via-shiny-in-r-with-googlesheets4/70215575#70215575
 # Set authentication token to be stored in a folder called `.secrets`
-options(gargle_oauth_cache = ".secrets")
+#options(gargle_oauth_cache = ".secrets")
 
 # Authenticate manually
 #gs4_auth()
@@ -63,8 +63,8 @@ options(gargle_oauth_cache = ".secrets")
 #   email = 'gavinmcd@gmail.com'
 # )
 #gs4_deauth() 
-gs4_auth(path = "sbck-365516-dc922ef58c73.json",
-         email = 'gavinmcd@gmail.com')
+#gs4_auth(path = "sbck-365516-dc922ef58c73.json",
+#         email = 'gavinmcd@gmail.com')
 
 # options(
 #  gargle_oauth_cache = '.secrets',
