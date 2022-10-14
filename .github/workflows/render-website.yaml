@@ -2,6 +2,9 @@ on:
   push:
     paths:
       - docs/index.Rmd
+  schedule:
+    # Runs "At 11:05 on every day-of-week from Monday through Friday"
+    - cron: '5 11 * * 1-5'
 
 name: Render my document
 
