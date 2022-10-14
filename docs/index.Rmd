@@ -24,62 +24,15 @@ library(tidyverse) # For data wrangling
 library(leaflet) # For mapping 
 library(googlesheets4) # For loading data from Google Sheets
 library(flexdashboard) # Tools for making the dashboard
-
-# Authentication guidance: https://stackoverflow.com/questions/63535190/connect-to-googlesheets-via-shiny-in-r-with-googlesheets4/70215575#70215575
-# Set authentication token to be stored in a folder called `.secrets`
-#options(gargle_oauth_cache = ".secrets")
-
-# Authenticate manually
-#gs4_auth()
-# If successful, the previous step stores a token file.
-# Check that a file has been created with:
-#list.files(".secrets/")
-# Check that the non-interactive authentication works by first deauthorizing: 
-#gs4_deauth()
-
-# Authenticate using token. If no browser opens, the authentication works.
-# gs4_auth(cache = ".secrets", email = "gavinmcd@gmail.com", use_oob = TRUE)
-#gs4_auth(token = gs4_token())
-
-# designate project-specific cache
-#options(gargle_oauth_cache = '.secrets')
-# # check the value of the option, if you like
-#gargle::gargle_oauth_cache()
-# 
-# # trigger auth on purpose to store a token in the specified cache
-# # a broswer will be opened
-# googlesheets4::gs4_auth()
-# 
-# # see your token file in the cache, if you like
-# list.files('.secrets/')
-# 
-# # deauth
-# gs4_deauth()
-# #In sheets_auth() we can specify where the token is cached and which
-# #email we used to authenticate.
-# # sheets reauth with specified token and email address
-# gs4_auth(
-#   cache = '.secrets',
-#   email = 'gavinmcd@gmail.com'
-# )
-#gs4_deauth() 
-#gs4_auth(path = "sbck-365516-dc922ef58c73.json",
-#         email = 'gavinmcd@gmail.com')
-
-# options(
-#  gargle_oauth_cache = '.secrets',
-#  gargle_oauth_email = 'gavinmcd@gmail.com'
-# )
-# 
-# gs4_auth()
-
-# Read in raw data from Google Sheets
-watershed_brigade_data_raw <- googlesheets4::read_sheet("1SVNe7XiDKMprvO3PnNbQBSRoYau1JbyqwHhx6Dz67jc",
-                                                        col_types = "c",
-                                                        skip = 1) 
 ```
 
 ```{r}
+# Read in raw data from Google Sheets
+# Sheet is publically available to view, so force deauth
+gs4_deauth()
+watershed_brigade_data_raw <- read_sheet("1SVNe7XiDKMprvO3PnNbQBSRoYau1JbyqwHhx6Dz67jc",
+                                                        col_types = "c",
+                                                        skip = 1) 
 # Process data
 watershed_brigade_data_processed <- watershed_brigade_data_raw %>% 
   # Don't want these rows
