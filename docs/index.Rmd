@@ -159,7 +159,8 @@ monthly_volunteer_summary <- watershed_brigade_data_processed %>%
   dplyr::select(-month_number)
 
 monthly_volunteer_summary %>%
-  datatable(options = list(dom = 'tp'))
+  datatable(options = list(dom = 't',
+                           pageLength = nrow(monthly_volunteer_summary)))
 ```
 
 Row
@@ -181,6 +182,10 @@ monthly_total_summary <- watershed_brigade_data_processed %>%
   dplyr::select(-month_number)
 
 monthly_total_summary %>%
-  datatable(options = list(dom = 'tp'))
+  datatable(options = list(dom = 't',
+                           pageLength = nrow(monthly_total_summary)))
 ```
+Row {data-height=50}
+-----------------------------------------------------------------------
 
+### Last updated: `r lubridate::force_tz(Sys.time(),tzone = "America/Los_Angeles")` Santa Barbara time.
