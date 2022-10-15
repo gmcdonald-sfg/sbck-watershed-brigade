@@ -7,7 +7,7 @@ output:
 
 
 ```{r}
-# Load necessary packages
+# Load necessary packages 
 library(tidyverse) # For data wrangling
 library(leaflet) # For mapping 
 library(googlesheets4) # For loading data from Google Sheets
