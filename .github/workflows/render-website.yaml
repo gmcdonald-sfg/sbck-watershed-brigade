@@ -12,27 +12,17 @@ name: Render my document
 jobs:
   render:
     name: Render my document
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v2
       - uses: r-lib/actions/setup-pandoc@v2
-      - name: Install rmarkdown
-        run: Rscript -e 'install.packages("rmarkdown")'
-      - name: Install tidyverse
-        run: Rscript -e 'install.packages("tidyverse")'
-      - name: Install flexdashboard
-        run: Rscript -e 'install.packages("flexdashboard")'
-      - name: Install leaflet
-        run: Rscript -e 'install.packages("leaflet")'
-      - name: Install googlesheets4
-        run: Rscript -e 'install.packages("googlesheets4")'
-      - name: Install DT
-        run: Rscript -e 'install.packages("DT")'
-      - name: Render my document to all types
-        run: Rscript -e 'rmarkdown::render("docs/index.Rmd", output_format = "all")'
-      - name: Commit results
+      - uses: r-lib/actions/setup-renv@v2
+      - name: Render Rmarkdown files and Commit Results
         run: |
-          git add docs/index*
-          git commit -m 'Re-build index' || echo "No changes to commit"
+          RMD_PATH=($(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '[.]Rmd$'))
+          Rscript -e 'for (f in commandArgs(TRUE)) if (file.exists(f)) rmarkdown::render(f)' ${RMD_PATH[*]}
+          git config --local user.name "$GITHUB_ACTOR"
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git commit ${RMD_PATH[*]/.Rmd/.md} -m 'Re-build Rmarkdown files' || echo "No changes to commit"
           git push origin || echo "No changes to commit"
