@@ -7,7 +7,7 @@ output:
 
 
 ```{r}
-# Load necessary packages
+# Load necessary packages 
 library(tidyverse) # For data wrangling
 library(leaflet) # For mapping 
 library(googlesheets4) # For loading data from Google Sheets
@@ -16,7 +16,7 @@ library(DT)
 ```
 
 ```{r}
-# Read in raw data from Google Sheets
+# Read in raw data from Google Sheets 
 # Sheet is publically available to view, so force deauth
 gs4_deauth()
 watershed_brigade_data_raw <- read_sheet("1SVNe7XiDKMprvO3PnNbQBSRoYau1JbyqwHhx6Dz67jc",
