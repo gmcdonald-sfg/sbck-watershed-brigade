@@ -12,7 +12,7 @@ library(tidyverse) # For data wrangling
 library(leaflet) # For mapping 
 library(googlesheets4) # For loading data from Google Sheets
 library(flexdashboard) # Tools for making the dashboard
-library(DT)
+library(DT) 
 ```
 
 ```{r}
