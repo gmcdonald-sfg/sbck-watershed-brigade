@@ -14,6 +14,7 @@ library(stringr) # For string manipulation
 library(leaflet) # For mapping 
 library(googlesheets4) # For loading data from Google Sheets
 library(flexdashboard) # Tools for making the dashboard
+library(lubridate) # For handling dates
 library(DT) 
 ```
 
@@ -32,13 +33,13 @@ watershed_brigade_data_processed <- watershed_brigade_data_raw %>%
   # Require there to be a name
   filter(!is.na(Name)) %>%
   # This gets rid of header rows that have things like "January 2021"
-  mutate(Date = lubridate::mdy(Date)) %>%
+  mutate(Date = mdy(Date)) %>%
   # Add month name column
-  mutate(Month = lubridate::month(Date,label=TRUE,abbr = FALSE),
+  mutate(Month = month(Date,label=TRUE,abbr = FALSE),
          # Add year number column
-         Year = lubridate::year(Date),
+         Year = year(Date),
          # Add month number, for sorting
-         month_number = lubridate::month(Date)) %>%
+         month_number = month(Date)) %>%
   # Don't want rows that don't have a date
   filter(!is.na(Date)) %>%
   # Convert weight to numeric pounds
@@ -190,4 +191,4 @@ monthly_total_summary %>%
 Row {data-height=50}
 -----------------------------------------------------------------------
 
-### Last updated: `r lubridate::with_tz(Sys.time(),tzone = "America/Los_Angeles")` Santa Barbara time.
+### Last updated: `r with_tz(Sys.time(),tzone = "America/Los_Angeles")` Santa Barbara time.
