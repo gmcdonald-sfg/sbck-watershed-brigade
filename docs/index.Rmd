@@ -171,7 +171,7 @@ Row
 ### Watershed Brigade Monthly Cummulative Clean-up Chart
 
 ```{r}
-# Using same approach as above, summarize monthly sites, volunteers, and pounds of trash
+# Using same approach as above, summarize monthly sites, volunteers, and pounds of trash 
 monthly_total_summary <- watershed_brigade_data_processed %>%
   group_by(Year,
            Month,
