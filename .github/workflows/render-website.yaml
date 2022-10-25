@@ -1,6 +1,3 @@
-# Loosely based on: https://github.com/r-lib/actions/tree/v2/examples#render-rmarkdown
-# And https://rstudio.github.io/renv/articles/ci.html
-# And https://rstudio.github.io/renv/reference/paths.html#details
 on:
   push:
     paths:
@@ -14,40 +11,19 @@ on:
 name: Render my document
 
 jobs:
-  render-rmarkdown:
-    runs-on: macos-latest
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      RENV_PATHS_ROOT: ~/Library/Application Support/renv
+  render:
+    name: Render my document
+    runs-on: macOS-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - uses: r-lib/actions/setup-pandoc@v2
-
+      - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v2
-
-      - name: Cache packages
-        uses: actions/cache@v1
-        with:
-          path: ${{ env.RENV_PATHS_ROOT }}
-          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-renv-
-
-      - name: Restore packages
-        shell: Rscript {0}
+      - uses: r-lib/actions/setup-pandoc@v2
+      - name: Install packages
+        run: Rscript -e 'install.packages("rmarkdown","dplyr","tidyr","stringr","flexdashboard","leaflet","DT","googlesheets4")'
+      - name: Render document
+        run: Rscript -e 'rmarkdown::render("docs/index.Rmd", output_format = "all")'
+      - name: Commit results
         run: |
-          if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv")
-          renv::restore()
-
-      - name: Render Rmarkdown files and Commit Results
-        run: |
-          RMD_PATH=($(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '[.]Rmd$'))
-          Rscript -e 'for (f in commandArgs(TRUE)) if (file.exists(f)) rmarkdown::render(f)' ${RMD_PATH[*]}
-          git config --local user.name "$GITHUB_ACTOR"
-          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git commit ${RMD_PATH[*]/.Rmd/.md} -m 'Re-build Rmarkdown files' || echo "No changes to commit"
+          git add docs/index*
+          git commit -m 'Re-build index' || echo "No changes to commit"
           git push origin || echo "No changes to commit"
