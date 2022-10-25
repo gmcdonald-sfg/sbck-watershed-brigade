@@ -2,6 +2,7 @@ on:
   push:
     paths:
       - docs/index.Rmd
+      - .github/workflows/render-website.yaml
   schedule:
     # Runs "At 6am UTC on every day-of-week from Tuesday through Saturday", time in UTC
     # https://jasonet.co/posts/scheduled-actions/
@@ -11,7 +12,7 @@ name: Render my document
 
 jobs:
   render-rmarkdown:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       RENV_PATHS_ROOT: ~/.local/share/renv
