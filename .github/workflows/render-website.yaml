@@ -1,3 +1,6 @@
+# Loosely based on: https://github.com/r-lib/actions/tree/v2/examples#render-rmarkdown
+# And https://rstudio.github.io/renv/articles/ci.html
+# And https://rstudio.github.io/renv/reference/paths.html#details
 on:
   push:
     paths:
@@ -15,7 +18,7 @@ jobs:
     runs-on: macos-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      RENV_PATHS_ROOT: ~/.local/share/renv
+      RENV_PATHS_ROOT: ~/Library/Application Support/renv
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
