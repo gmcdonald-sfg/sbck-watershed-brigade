@@ -18,18 +18,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: r-lib/actions/setup-r@v2
       - uses: r-lib/actions/setup-pandoc@v2
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: |
-            any::rmarkdown
-            any::dplyr
-            any::tidyr
-            any::stringr
-            any::flexdashboard
-            any::leaflet
-            any::DT
-            any::googlesheets4
-            any::lubridate
+      - name: Install packages
+        run: Rscript -e 'install.packages(c("rmarkdown","dplyr","tidyr","stringr","flexdashboard","leaflet","DT","googlesheets4","lubridate"))'
       - name: Render document
         run: Rscript -e 'rmarkdown::render("docs/index.Rmd", output_format = "all")'
       - name: Commit results
