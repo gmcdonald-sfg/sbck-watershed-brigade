@@ -13,7 +13,7 @@ name: Render my document
 jobs:
   render:
     name: Render my document
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: r-lib/actions/setup-r@v2
